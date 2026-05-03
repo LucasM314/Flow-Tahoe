@@ -1,0 +1,436 @@
+<!--
+    Name: Flow Tahoe (Blur)
+    IsDark: True
+    HasBlur: True
+-->
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:m="http://schemas.inkore.net/lib/ui/wpf/modern"
+    xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
+    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/Themes/Base.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+    
+    <!-- When the blur effect is enabled, the window corner radius is determined by the system, so we disable it. -->
+    <system:Boolean x:Key="ThemeBlurEnabled">True</system:Boolean>
+    <system:String x:Key="SystemBG">Dark</system:String>
+    <!-- In WPF, colors are 8 characters (ARGB). The first two characters represent the Alpha channel (transparency).
+     Warning: VSCode's built-in color picker doesn't support this format.
+     See: https://caesarcipher.org/converters/rgba-to-hex-converter
+     45% opacity = 73 in HEX -->
+    <Color x:Key="DarkBG">#50050505</Color>
+    <system:Double x:Key="ResultItemHeight">56</system:Double>
+    
+    <!-- Main window background -->
+    <Style
+        x:Key="WindowBorderStyle"
+        BasedOn="{StaticResource BaseWindowBorderStyle}"
+        TargetType="{x:Type Border}">
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="#60c5c5c5" />
+        <Setter Property="Background" Value="#2c2c2c" />
+        <Setter Property="CornerRadius" Value="27" />
+        <Setter Property="Padding" Value="0 0 2 0" />
+    </Style>
+    
+    <Style
+        x:Key="WindowStyle"
+        BasedOn="{StaticResource BaseWindowStyle}"
+        TargetType="{x:Type Window}">
+        <Setter Property="Width" Value="638" />
+    </Style>
+        
+    <Style x:Key="WindowRadius" TargetType="{x:Type Border}" />
+    
+    
+    <!-- Query input text box -->
+    <Style
+        x:Key="QueryBoxStyle"
+        BasedOn="{StaticResource BaseQueryBoxStyle}"
+        TargetType="{x:Type TextBox}">
+        <Setter Property="FontSize" Value="26" />
+        <Setter Property="Foreground" Value="#FFFFFFFF" />
+        <Setter Property="CaretBrush" Value="#FFFFFFFF" />
+        <Setter Property="Height" Value="54" />
+        <Setter Property="Margin" Value="57 0 0 1" />
+
+        <!-- Custom template for the watermark -->
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TextBox}">
+                    
+                    <Grid Background="Transparent">
+                        
+                        <!-- The "Spotlight Search" watermark -->
+                        <TextBlock
+                            x:Name="WatermarkText"
+                            Text="Spotlight Search"
+                            Foreground="#4Df0f0f0"
+                            FontSize="24"
+                            VerticalAlignment="Center"
+                            Margin="2,0,0,1"
+                            IsHitTestVisible="False"
+                            Visibility="Collapsed" />
+
+                        <!-- The scroll viewer for the text content -->
+                        <ui:ScrollViewerEx x:Name="PART_ContentHost" />
+                            
+                    </Grid>
+
+                    <!-- Watermark trigger -->
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Text" Value="">
+                            <Setter TargetName="WatermarkText" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                    
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Query suggestion text box
+    We use a custom template to:
+     - Allow smaller font by scaling the rendering (ScaleTransform)
+     - Position the selected item title right next to the query, by using an invisible shadow text hack
+     - Add the horizontal line separator which appears in Spotlight between the query and the selected item title -->
+    <Style
+        x:Key="QuerySuggestionBoxStyle"
+        BasedOn="{StaticResource BaseQuerySuggestionBoxStyle}"
+        TargetType="{x:Type TextBox}">
+        
+        <Setter Property="Foreground" Value="#40f0f0f0" />
+        <!-- Fome some unexplainable reason (actually it's probably to avoid
+        collapsing with time/date/search icon when the input is very long) the
+        suggestion box has a default 68 right padding. We overwrite it. -->
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Margin" Value="57 0 0 0" />
+        
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TextBox}">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+
+                        <!-- The invisible shadow text -->
+                        <!-- This binds to the main search bar. It types what the user types, taking up
+                        the exact same physical space, but remains completely invisible. -->
+                        <TextBlock 
+                            Text="{Binding ElementName=QueryTextBox, Path=Text}"
+                            FontFamily="{TemplateBinding FontFamily}"
+                            FontSize="{TemplateBinding FontSize}"
+                            FontWeight="{TemplateBinding FontWeight}"
+                            Opacity="0" 
+                            VerticalAlignment="Center" />
+
+                        <!-- The Tahoe pill -->
+                        <Border
+                            x:Name ="TahoePill"
+                            Background="#30bebebe"
+                            CornerRadius="9"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Margin="3,0,0,1"
+                            Padding="13,8,9,4">
+                            
+                            <StackPanel Orientation="Horizontal">
+                                
+                                <StackPanel.LayoutTransform>
+                                    <ScaleTransform ScaleX="0.62" ScaleY="0.62" />
+                                </StackPanel.LayoutTransform>
+
+                                            <!-- The separator -->
+                                            <Rectangle 
+                                                Width="19" 
+                                                Height="2" 
+                                                Fill="#60f0f0f0" 
+                                                Margin="0,3,13,0" 
+                                                VerticalAlignment="Center" 
+                                                RadiusX="1" 
+                                                RadiusY="1" />
+                                            
+                                <!-- We bind to the title of the selected item, internally known as "SelectedItem.Result.Title" in "ResultListBox" -->
+                                <TextBlock 
+                                    Text="{Binding ElementName=ResultListBox, Path=SelectedItem.Result.Title}"
+                                    Foreground="#40f0f0f0"
+                                    FontFamily="{TemplateBinding FontFamily}"
+                                    FontSize="{TemplateBinding FontSize}"
+                                    VerticalAlignment="Center" />
+                                        
+                                        </StackPanel>
+
+                        </Border>
+
+                    </StackPanel>
+
+                    <!-- This trigger hides the TahoePill when not needed -->
+                    <ControlTemplate.Triggers>
+                        <!-- We hide the TahoePill when the query text is empty -->
+                        <DataTrigger Binding="{Binding ElementName=QueryTextBox, Path=Text}" Value="">
+                            <Setter TargetName="TahoePill" Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                        
+                        <!-- We hide the TahoePill when no item is selected in the list -->
+                        <DataTrigger Binding="{Binding ElementName=ResultListBox, Path=SelectedItem}" Value="{x:Null}">
+                            <Setter TargetName="TahoePill" Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                        
+                        <!-- We hide the TahoePill when the title of the selected result is empty -->
+                        <DataTrigger Binding="{Binding ElementName=ResultListBox, Path=SelectedItem.Result.Title}" Value="">
+                            <Setter TargetName="TahoePill" Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </ControlTemplate.Triggers>
+
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Time text block -->
+    <Style
+        x:Key="ClockBox"
+        BasedOn="{StaticResource BaseClockBox}"
+        TargetType="{x:Type TextBlock}">
+        <Setter Property="Margin" Value="0 0 -25 0" />
+        <!-- padding -->
+        <Setter Property="Foreground" Value="#CCe0e0e0" />
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="FontStyle" Value="Normal" />
+        <Setter Property="FontWeight" Value="Normal" />
+    </Style>
+    
+    <!-- Date text block -->
+    <Style
+        x:Key="DateBox"
+        BasedOn="{StaticResource BaseDateBox}"
+        TargetType="{x:Type TextBlock}">
+        <Setter Property="Margin" Value="0 0 -25 0" />
+        <Setter Property="Foreground" Value="#FF79817F" />
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="FontStyle" Value="Normal" />
+        <Setter Property="FontWeight" Value="Normal" />
+    </Style>
+    
+    <!-- Official Apple Search Icon, pulled from Apple's website -->
+    <PathGeometry 
+        x:Key="SearchIconImg" 
+        Figures="m16.2294 29.9556-4.1755-4.0821a6.4711 6.4711 0 1 0 -1.2839 1.2625l4.2005 4.1066a.9.9 0 1 0 1.2588-1.287zm-14.5294-8.0017a5.2455 5.2455 0 1 1 5.2455 5.2527 5.2549 5.2549 0 0 1 -5.2455-5.2527z" />
+
+    <!-- Icon to the right of the query text box -->
+    <Style
+        x:Key="SearchIconStyle"
+        BasedOn="{StaticResource BaseSearchIconStyle}"
+        TargetType="{x:Type Path}">
+        
+        <!-- The geometry is a solid shape, so we fill it -->
+        <Setter Property="Fill" Value="#CCffffff" />
+        <Setter Property="Stroke" Value="Transparent" />
+        <Setter Property="StrokeThickness" Value="0" />
+        
+        <Setter Property="Width" Value="23" />
+        <Setter Property="Height" Value="23" />
+        <!-- <Setter Property="Stretch" Value="Uniform" /> -->
+    </Style>
+
+    <Style x:Key="SearchIconPosition" TargetType="{x:Type Canvas}">
+        <Setter Property="Width" Value="32" />
+        <Setter Property="Height" Value="32" />
+        <Setter Property="Margin" Value="20 8 0 0" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+    </Style>
+    
+    <!-- Progress bar under the query text box -->
+    <Style
+        x:Key="PendingLineStyle"
+        BasedOn="{StaticResource BasePendingLineStyle}"
+        TargetType="{x:Type Line}">
+        <Setter Property="Stroke" Value="#FFB3B3B3" />
+        <Setter Property="StrokeThickness" Value="2" />
+    </Style>
+    
+    
+    <!-- Separator between the query box and the results -->
+    <Style
+        x:Key="SeparatorStyle"
+        BasedOn="{StaticResource BaseSeparatorStyle}"
+        TargetType="{x:Type Rectangle}">
+        <Setter Property="Fill" Value="#30B3B3B3" />
+        <Setter Property="Height" Value="1" />
+        <Setter Property="Margin" Value="20 0 20 10" />
+    </Style>
+    
+    
+    <!-- Margins for the list of results -->
+    <Thickness x:Key="ResultMargin">0 0 0 10</Thickness>
+
+    <!-- Result title -->
+    <Style
+        x:Key="ItemTitleStyle"
+        BasedOn="{StaticResource BaseItemTitleStyle}"
+        TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="#FFFFFFFF" />
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="Margin" Value="2 0 0 0" />
+    </Style>
+    
+    <Style
+        x:Key="ItemTitleSelectedStyle"
+        BasedOn="{StaticResource BaseItemTitleSelectedStyle}"
+        TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="#FFFFFFFF" />
+        <Setter Property="Margin" Value="2 0 0 0" />
+    </Style>
+    
+    <!-- Result subtitle -->
+    <Style
+        x:Key="ItemSubTitleStyle"
+        BasedOn="{StaticResource BaseItemSubTitleStyle}"
+        TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="#99848484" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Margin" Value="2 0 0 0" />
+    </Style>
+    
+    <Style
+        x:Key="ItemSubTitleSelectedStyle"
+        BasedOn="{StaticResource BaseItemSubTitleSelectedStyle}"
+        TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="#8d8d8d" />
+        <Setter Property="Margin" Value="2 0 0 0" />
+    </Style>
+
+    <!-- In Spotlight, the item hotkey is only visible when selected, so we
+    hide the unselected ones. -->
+    <Style
+        x:Key="ItemHotkeyBGStyle"
+        BasedOn="{StaticResource BaseItemHotkeyBGStyle}"
+        TargetType="{x:Type Border}">
+        <Setter Property="Opacity" Value="0" />
+    </Style>
+
+    <Style
+        x:Key="ItemHotkeyBGSelectedStyle"
+        BasedOn="{StaticResource BaseItemHotkeyBGSelectedStyle}"
+        TargetType="{x:Type Border}">
+        <Setter Property="Background" Value="#40C7C7CC" />
+        <Setter Property="CornerRadius" Value="6" />
+    </Style>
+
+    <Style x:Key="ItemHotkeySelectedStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="Foreground" Value="#D9ffffff" />
+    </Style>
+    
+    <!-- Result glyph -->
+    <Style x:Key="ItemGlyph" TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="#FF5BAFB0" />
+        <Setter Property="Width" Value="20" />
+        <Setter Property="Height" Value="20" />
+        <Setter Property="FontSize" Value="20" />
+    </Style>
+    
+    <Style x:Key="ItemGlyphSelectedStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="#FFFFFFFF" />
+        <Setter Property="Width" Value="20" />
+        <Setter Property="Height" Value="20" />
+        <Setter Property="FontSize" Value="20" />
+    </Style>
+    
+    <!-- Selected result styles -->
+    <SolidColorBrush x:Key="ItemSelectedBackgroundColor">#26ffffff</SolidColorBrush>
+    <CornerRadius x:Key="ItemRadius">18</CornerRadius>
+    <Thickness x:Key="ItemMargin">10 0 24 0</Thickness>
+    
+    <!-- Highlighted text -->
+    <Style x:Key="HighlightStyle">
+        <Setter Property="Inline.Foreground" Value="#FFFFFFFF" />
+        <Setter Property="Inline.FontStyle" Value="Normal" />
+        <Setter Property="Inline.FontWeight" Value="Normal" />
+    </Style>
+    
+    
+    <!-- Bullets -->
+    <Style
+        x:Key="BulletStyle"
+        BasedOn="{StaticResource BaseBulletStyle}"
+        TargetType="{x:Type Border}">
+        <Setter Property="Visibility" Value="Collapsed" />
+    </Style>
+    
+    <Style
+        x:Key="ItemBulletSelectedStyle"
+        BasedOn="{StaticResource BaseBulletStyle}"
+        TargetType="{x:Type Border}">
+        <Setter Property="Visibility" Value="Collapsed" />
+    </Style>
+    
+    
+    <!-- Scrollbar container -->
+    <Style
+        x:Key="ScrollBarStyle"
+        BasedOn="{StaticResource BaseScrollBarStyle}"
+        TargetType="{x:Type ScrollBar}">
+        <Setter Property="Width" Value="11" />
+    </Style>
+
+    <!-- Scrollbar thumb -->
+    <Style
+        x:Key="ThumbStyle"
+        BasedOn="{StaticResource BaseThumbStyle}"
+        TargetType="{x:Type Thumb}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Thumb}">
+                    <Border
+                        Background="#6b6b6b"
+                        BorderBrush="Transparent"
+                        BorderThickness="0"
+                        CornerRadius="5"
+                        DockPanel.Dock="Right" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    <!-- Preview Panel. We ignore it since it is not present in Spotlight. -->
+    <Style
+        x:Key="PreviewBorderStyle"
+        BasedOn="{StaticResource BasePreviewBorderStyle}"
+        TargetType="{x:Type Border}">
+        <Setter Property="BorderBrush" Value="#FF3C454E" />
+        <Setter Property="BorderThickness" Value="1 0 0 0" />
+        <Setter Property="Margin" Value="0 0 0 0" />
+    </Style>
+    
+    <Style
+        x:Key="PreviewItemTitleStyle"
+        BasedOn="{StaticResource BasePreviewItemTitleStyle}"
+        TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="#FF5888B2" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontStyle" Value="Normal" />
+        <Setter Property="FontWeight" Value="Normal" />
+        <Setter Property="LineHeight" Value="21" />
+    </Style>
+    
+    <Style
+        x:Key="PreviewItemSubTitleStyle"
+        BasedOn="{StaticResource BasePreviewItemSubTitleStyle}"
+        TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="#FF8B95A1" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontStyle" Value="Normal" />
+        <Setter Property="FontWeight" Value="Normal" />
+        <Setter Property="LineHeight" Value="18" />
+    </Style>
+    
+    <Style
+        x:Key="PreviewGlyph"
+        BasedOn="{StaticResource BasePreviewGlyph}"
+        TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="#FF8B95A1" />
+    </Style>
+    
+</ResourceDictionary>
