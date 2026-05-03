@@ -6,7 +6,7 @@
 
 ![Preview 2](Previews/Preview%202.png)
 
-![macOS Tahoe Spotlight Reference](masOS%20Tahoe%20Spotlight%20Dark%20Mode.png)
+![macOS Tahoe Spotlight Reference](Previews/masOS%20Tahoe%20Spotlight%20Dark%20Mode.png)
 *macOS Tahoe Spotlight*
 
 Blur version:
