@@ -10,9 +10,9 @@
 *macOS Tahoe Spotlight*
 
 Blur version:
-![Preview 1](Previews/Preview%203%20(Blur).png)
+![Preview 1](Previews/Preview%203%20(blur).png)
 
-![Preview 2](Previews/Preview%204%20(Blur).png)
+![Preview 2](Previews/Preview%204%20(blur).png)
 
 
 ## ⚙️ Optimal Settings
