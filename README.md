@@ -2,12 +2,18 @@
 
 > A beautiful dark mode theme for [Flow Launcher](https://github.com/Flow-Launcher/Flow.Launcher), meticulously crafted to replicate the macOS Tahoe Spotlight experience.
 
-![macOS Tahoe Spotlight Reference](Preview%201.png)
+![Preview 1](Previews/Preview%201.png)
 
-![macOS Tahoe Spotlight Reference](Preview%202.png)
+![Preview 2](Previews/Preview%202.png)
 
 ![macOS Tahoe Spotlight Reference](masOS%20Tahoe%20Spotlight%20Dark%20Mode.png)
 *macOS Tahoe Spotlight*
+
+Blur version:
+![Preview 1](Previews/Preview%203%20(Blur).png)
+
+![Preview 2](Previews/Preview%204%20(Blur).png)
+
 
 ## ⚙️ Optimal Settings
 
