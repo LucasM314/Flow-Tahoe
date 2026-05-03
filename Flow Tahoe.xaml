@@ -186,13 +186,20 @@
         </Setter>
     </Style>
 
+    <!-- The panel with the time and date -->
+    <Style
+        x:Key="ClockPanel"
+        BasedOn="{StaticResource ClockPanel}"
+        TargetType="{x:Type StackPanel}">
+        <Setter Property="Margin" Value="0 0 20 0" />
+    </Style>
+
     <!-- Time text block -->
     <Style
         x:Key="ClockBox"
         BasedOn="{StaticResource BaseClockBox}"
         TargetType="{x:Type TextBlock}">
-        <Setter Property="Margin" Value="0 0 -25 0" />
-        <!-- padding -->
+        <Setter Property="Margin" Value="0 0 0 0" />
         <Setter Property="Foreground" Value="#CCe0e0e0" />
         <Setter Property="FontSize" Value="20" />
         <Setter Property="FontStyle" Value="Normal" />
@@ -204,7 +211,7 @@
         x:Key="DateBox"
         BasedOn="{StaticResource BaseDateBox}"
         TargetType="{x:Type TextBlock}">
-        <Setter Property="Margin" Value="0 0 -25 0" />
+        <Setter Property="Margin" Value="0 0 0 0" />
         <Setter Property="Foreground" Value="#FF79817F" />
         <Setter Property="FontSize" Value="20" />
         <Setter Property="FontStyle" Value="Normal" />

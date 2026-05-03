@@ -36,7 +36,3 @@ For the best experience and the most authentic look, it is recommended to config
 | **Fixed Window Size** | ✅ Enable (Lock the width using the reference image above) |
 | **Maximum Results** | `6` to `7` |
 | **Show Placeholder** | ❌ Disable |
-
-### Clock & Date Widget
-
-For the cleanest look, enable **only** the clock *or* the date, but not both.
