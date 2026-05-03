@@ -1,4 +1,4 @@
-# 🌊 Tahoe Flow Theme
+# 🌊 Flow Tahoe Theme
 
 > A beautiful dark mode theme for [Flow Launcher](https://github.com/Flow-Launcher/Flow.Launcher), meticulously crafted to replicate the macOS Tahoe Spotlight experience.
 
