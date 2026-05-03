@@ -1,5 +1,5 @@
 <!--
-    Name: Tahoe Flow
+    Name: Flow Tahoe
     IsDark: True
     HasBlur: True
 -->
@@ -60,8 +60,8 @@
     <!-- Query suggestion text box
     We use a custom template to:
      - Allow smaller font by scaling the rendering (ScaleTransform)
-     - Position the suggestion right next to the query, by using an invisible shadow text hack
-     - Add the horizontal line separator which appears in Spotlight between the query and the suggestion -->
+     - Position the selected item title right next to the query, by using an invisible shadow text hack
+     - Add the horizontal line separator which appears in Spotlight between the query and the selected item title -->
     <Style
         x:Key="QuerySuggestionBoxStyle"
         BasedOn="{StaticResource BaseQuerySuggestionBoxStyle}"
@@ -99,50 +99,53 @@
                             VerticalAlignment="Center"
                             Margin="3,0,0,1"
                             Padding="13,8,9,4">
+
+                            <StackPanel Orientation="Horizontal">
                             
-                            <ui:ScrollViewerEx
-                                x:Name="PART_ContentHost"
-                                Focusable="false"
-                                HorizontalScrollBarVisibility="Hidden"
-                                VerticalScrollBarVisibility="Hidden">
-                                
-                                <!-- Magic hack: shrink the actual rendering by 50% -->
-                                <ui:ScrollViewerEx.LayoutTransform>
+                                <StackPanel.LayoutTransform>
                                     <ScaleTransform ScaleX="0.62" ScaleY="0.62" />
-                                </ui:ScrollViewerEx.LayoutTransform>
+                                </StackPanel.LayoutTransform>
 
-                                <ui:ScrollViewerEx.ContentTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Orientation="Horizontal">
+                                <!-- The separator -->
+                                <Rectangle 
+                                    Width="19" 
+                                    Height="2" 
+                                    Fill="#60f0f0f0" 
+                                    Margin="0,3,13,0" 
+                                    VerticalAlignment="Center" 
+                                    RadiusX="1" 
+                                    RadiusY="1" />
+                                
+                                <!-- We bind to the title of the selected item, internally known as "SelectedItem.Result.Title" in "ResultListBox" -->
+                                <TextBlock 
+                                    Text="{Binding ElementName=ResultListBox, Path=SelectedItem.Result.Title}"
+                                    Foreground="#40f0f0f0"
+                                    FontFamily="{TemplateBinding FontFamily}"
+                                    FontSize="{TemplateBinding FontSize}"
+                                    VerticalAlignment="Center" />
+                                    
+                            </StackPanel>
 
-                                            <!-- The separator -->
-                                            <Rectangle 
-                                                Width="19" 
-                                                Height="2" 
-                                                Fill="#60f0f0f0" 
-                                                Margin="0,3,13,0" 
-                                                VerticalAlignment="Center" 
-                                                RadiusX="1" 
-                                                RadiusY="1" />
-                                            
-                                            <!-- The suggestion text -->
-                                            <ContentPresenter Content="{Binding Path=Content, ElementName=PART_ContentHost}" />
-                                        
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ui:ScrollViewerEx.ContentTemplate>
-                            </ui:ScrollViewerEx>
                         </Border>
 
                     </StackPanel>
 
-                    <!-- This trigger hides the TahoePill when the suggestion text is empty -->
+                    <!-- This trigger hides the TahoePill when not needed -->
                     <ControlTemplate.Triggers>
-                        <!-- If the suggestion text itself is empty... -->
-                        <Trigger Property="Text" Value="">
-                            <!-- Instantly hide the TahoePill -->
+                        <!-- We hide the TahoePill when the query text is empty -->
+                        <DataTrigger Binding="{Binding ElementName=QueryTextBox, Path=Text}" Value="">
                             <Setter TargetName="TahoePill" Property="Visibility" Value="Collapsed" />
-                        </Trigger>
+                        </DataTrigger>
+                        
+                        <!-- We hide the TahoePill when no item is selected in the list -->
+                        <DataTrigger Binding="{Binding ElementName=ResultListBox, Path=SelectedItem}" Value="{x:Null}">
+                            <Setter TargetName="TahoePill" Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                        
+                        <!-- We hide the TahoePill when the title of the selected result is empty -->
+                        <DataTrigger Binding="{Binding ElementName=ResultListBox, Path=SelectedItem.Result.Title}" Value="">
+                            <Setter TargetName="TahoePill" Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
                     </ControlTemplate.Triggers>
 
                 </ControlTemplate>
