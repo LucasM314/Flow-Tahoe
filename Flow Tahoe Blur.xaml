@@ -134,23 +134,23 @@
                             VerticalAlignment="Center"
                             Margin="3,0,0,1"
                             Padding="13,8,10,4">
-                            
+
                             <StackPanel Orientation="Horizontal">
-                                
+                            
                                 <StackPanel.LayoutTransform>
                                     <ScaleTransform ScaleX="0.62" ScaleY="0.62" />
                                 </StackPanel.LayoutTransform>
 
-                                            <!-- The separator -->
-                                            <Rectangle 
-                                                Width="19" 
-                                                Height="2" 
-                                                Fill="#60f0f0f0" 
-                                                Margin="0,3,15,0" 
-                                                VerticalAlignment="Center" 
-                                                RadiusX="1" 
-                                                RadiusY="1" />
-                                            
+                                <!-- The separator -->
+                                <Rectangle 
+                                    Width="19" 
+                                    Height="2" 
+                                    Fill="#60f0f0f0" 
+                                    Margin="0,3,15,0" 
+                                    VerticalAlignment="Center" 
+                                    RadiusX="1" 
+                                    RadiusY="1" />
+                                
                                 <!-- We bind to the title of the selected item, internally known as "SelectedItem.Result.Title" in "ResultListBox" -->
                                 <TextBlock 
                                     Text="{Binding ElementName=ResultListBox, Path=SelectedItem.Result.Title}"
@@ -158,8 +158,8 @@
                                     FontFamily="{TemplateBinding FontFamily}"
                                     FontSize="{TemplateBinding FontSize}"
                                     VerticalAlignment="Center" />
-                                        
-                                        </StackPanel>
+                                    
+                            </StackPanel>
 
                         </Border>
 
@@ -187,7 +187,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-    
+
     <!-- The panel with the time and date -->
     <Style
         x:Key="ClockPanel"
