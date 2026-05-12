@@ -21,7 +21,7 @@
      Warning: VSCode's built-in color picker doesn't support this format.
      See: https://caesarcipher.org/converters/rgba-to-hex-converter
      45% opacity = 73 in HEX -->
-    <Color x:Key="DarkBG">#50050505</Color>
+    <Color x:Key="DarkBG">#73050505</Color>
     <system:Double x:Key="ResultItemHeight">56</system:Double>
     
     <!-- Main window background -->
@@ -31,7 +31,7 @@
         TargetType="{x:Type Border}">
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="BorderBrush" Value="#60c5c5c5" />
-        <Setter Property="Background" Value="#2c2c2c" />
+        <Setter Property="Background" Value="Transparent" />
         <Setter Property="CornerRadius" Value="27" />
         <Setter Property="Padding" Value="0 0 2 0" />
     </Style>
